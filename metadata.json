@@ -1,0 +1,5 @@
+{
+  "name": "Lumina Flow",
+  "description": "A high-fidelity, immersive landing page featuring a 3D generative wave visualization built with React Three Fiber and Tailwind CSS.",
+  "requestFramePermissions": []
+}
