@@ -34,10 +34,12 @@ const WaveLine: React.FC<WaveLineProps> = ({ index, totalLines, width, numPoints
     const positionAttribute = geometry.attributes.position;
     const colorAttribute = geometry.attributes.color;
     
-    // Define gradient colors
-    const c1 = new THREE.Color('#60a5fa'); // Blue-400
-    const c2 = new THREE.Color('#818cf8'); // Indigo-400
-    const c3 = new THREE.Color('#e879f9'); // Fuchsia-400
+    // Define gradient colors based on the requested CSS gradient
+    // 0% #FF3BFF, 38.02% #ECBFBF, 75.83% #5C24FF, 100% #D94FD5
+    const c1 = new THREE.Color('#FF3BFF');
+    const c2 = new THREE.Color('#ECBFBF');
+    const c3 = new THREE.Color('#5C24FF');
+    const c4 = new THREE.Color('#D94FD5');
     const tempColor = new THREE.Color();
 
     // Compactness: Reduce the spacing between lines
@@ -49,7 +51,7 @@ const WaveLine: React.FC<WaveLineProps> = ({ index, totalLines, width, numPoints
       const x = (t - 0.5) * width;
       
       // Wave parameters
-      const speed = 0.15; // Slightly slower for elegance
+      const speed = 0.15; 
       const noiseScale = 0.15; 
       
       const flow = Math.sin(x * 0.3 + time * speed + zOffset * 1.5);
@@ -66,17 +68,26 @@ const WaveLine: React.FC<WaveLineProps> = ({ index, totalLines, width, numPoints
       // Calculate Depth (Z)
       const z = zOffset + Math.sin(x * 0.5 + time * 0.2) * 0.3 * taper;
 
-      // Shift down but slightly higher than before so it's behind the central card
-      // Previous was -3.5, now -2.5 to bring it up behind the glass UI
+      // Position shift to place behind UI
       positionAttribute.setXYZ(i, x, y - 2.5, z); 
 
       // --- Dynamic Gradient Logic ---
+      // We create a moving phase 0..1 and map it to the 4 color stops
       const colorPhase = (Math.sin(x * 0.15 + time * 0.3) + 1) / 2; 
       
-      if (colorPhase < 0.5) {
-        tempColor.lerpColors(c1, c2, colorPhase * 2);
+      // Interpolate based on stops: 0, 0.38, 0.758, 1.0
+      if (colorPhase < 0.38) {
+        // Range 0 to 0.38
+        const localT = colorPhase / 0.38;
+        tempColor.lerpColors(c1, c2, localT);
+      } else if (colorPhase < 0.758) {
+        // Range 0.38 to 0.758
+        const localT = (colorPhase - 0.38) / (0.758 - 0.38);
+        tempColor.lerpColors(c2, c3, localT);
       } else {
-        tempColor.lerpColors(c2, c3, (colorPhase - 0.5) * 2);
+        // Range 0.758 to 1.0
+        const localT = (colorPhase - 0.758) / (1.0 - 0.758);
+        tempColor.lerpColors(c3, c4, localT);
       }
 
       // Fade out edges

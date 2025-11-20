@@ -27,7 +27,12 @@ export const UIOverlay: React.FC = () => {
         {/* Header Section */}
         <div className="text-center mb-10 pointer-events-auto z-20">
            <h1 className="text-5xl md:text-7xl font-light tracking-tight mb-4">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-400 to-fuchsia-400">
+            <span 
+              className="bg-clip-text text-transparent"
+              style={{
+                backgroundImage: 'linear-gradient(90deg, #FF3BFF 0%, #ECBFBF 38.02%, #5C24FF 75.83%, #D94FD5 100%)'
+              }}
+            >
               Clarity. Focus. Impact.
             </span>
           </h1>
