@@ -1,10 +1,69 @@
-import React, { Suspense } from 'react';
-import { Canvas } from '@react-three/fiber';
+import React, { Suspense, useRef, useMemo } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { WaveScene } from './Wave';
 import { IntroScene } from './IntroScene';
-import { ScrollControls, Scroll } from '@react-three/drei';
+import { ScrollControls, Scroll, useScroll } from '@react-three/drei';
 import { UIOverlay } from './UIOverlay';
 import { RotateCcw, X, ChevronDown } from 'lucide-react';
+
+const FlyingTitle = () => {
+  const scroll = useScroll();
+  const letters = "KAELUX".split('');
+  const letterRefs = useRef<(HTMLSpanElement | null)[]>([]);
+
+  // Generate random explosion trajectories once
+  const trajectories = useMemo(() => {
+    return letters.map((_, i) => {
+      const xDir = i % 2 === 0 ? -1 : 1; // Alternate general direction
+      return {
+        x: (Math.random() * 1500 - 750) + (xDir * 200), // Random spread with bias
+        y: (Math.random() * 1000 - 500),                // Random vertical
+        r: (Math.random() * 120 - 60)                   // Random rotation
+      };
+    });
+  }, []);
+
+  useFrame(() => {
+    // Animate during the first 50% of the scroll (leaving the first page)
+    const r1 = scroll.range(0, 0.5);
+    
+    if (letterRefs.current) {
+      letterRefs.current.forEach((span, i) => {
+        if (span) {
+          const t = trajectories[i];
+          // Interpolate position
+          const x = t.x * r1;
+          const y = t.y * r1;
+          const rot = t.r * r1;
+          
+          // Blur effect increases with distance
+          const blur = r1 * 20;
+          
+          // Fade out
+          const opacity = 1 - (r1 * 1.5);
+
+          span.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${rot}deg)`;
+          span.style.filter = `blur(${blur}px)`;
+          span.style.opacity = `${Math.max(0, opacity)}`;
+        }
+      });
+    }
+  });
+
+  return (
+    <h1 className="text-[15vw] md:text-[180px] font-black text-[#1a1a1a] tracking-tighter flex justify-center">
+      {letters.map((char, i) => (
+        <span
+          key={i}
+          ref={(el) => (letterRefs.current[i] = el)}
+          className="inline-block will-change-transform"
+        >
+          {char}
+        </span>
+      ))}
+    </h1>
+  );
+};
 
 export const CanvasWrapper: React.FC = () => {
   return (
@@ -56,9 +115,7 @@ export const CanvasWrapper: React.FC = () => {
 
                         {/* Big Typography */}
                         <div className="relative leading-[0.85] select-none font-sans">
-                            <h1 className="text-[15vw] md:text-[180px] font-black text-[#1a1a1a] tracking-tighter">
-                                KAELUX
-                            </h1>
+                            <FlyingTitle />
                         </div>
 
                         {/* Scroll Down Indicator */}

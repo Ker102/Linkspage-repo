@@ -65,7 +65,7 @@ export const UIOverlay: React.FC = () => {
                 backgroundImage: 'linear-gradient(90deg, #FF3BFF 0%, #ECBFBF 38.02%, #5C24FF 75.83%, #D94FD5 100%)'
               }}
             >
-              Clarity. Focus. Impact.
+              Portal to my stuff.
             </span>
           </h1>
           <p className="text-gray-400 text-lg font-light tracking-wide opacity-80">
