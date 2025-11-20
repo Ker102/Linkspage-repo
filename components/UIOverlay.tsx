@@ -1,7 +1,39 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { RotateCcw, X, Globe, Github, Linkedin, Instagram, ArrowRight } from 'lucide-react';
+import { useScroll } from '@react-three/drei';
+import { useFrame } from '@react-three/fiber';
 
 export const UIOverlay: React.FC = () => {
+  const scroll = useScroll();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useFrame(() => {
+    // Get scroll progress (0 to 1)
+    const scrollProgress = scroll.offset;
+    let opacity = 0;
+
+    // Sync with Wave appearance: Starts at 0.75, fully visible at 1.0
+    if (scrollProgress > 0.75) {
+        opacity = (scrollProgress - 0.75) / 0.25;
+    }
+    
+    // Clamp opacity
+    opacity = Math.min(Math.max(opacity, 0), 1);
+
+    if (containerRef.current) {
+        containerRef.current.style.opacity = opacity.toString();
+        
+        // Add a subtle entry animation (slide up slightly and scale in)
+        const slideOffset = (1 - opacity) * 30; // 30px down when invisible
+        const scale = 0.95 + (opacity * 0.05); // Scale from 0.95 to 1.0
+        
+        containerRef.current.style.transform = `translateY(${slideOffset}px) scale(${scale})`;
+        
+        // Disable pointer events when not fully visible to prevent accidental clicks during transition
+        containerRef.current.style.pointerEvents = opacity > 0.8 ? 'auto' : 'none';
+    }
+  });
+
   const links = [
     { id: 1, label: 'Website', icon: Globe, href: '#' },
     { id: 2, label: 'GitHub', icon: Github, href: '#' },
@@ -10,9 +42,9 @@ export const UIOverlay: React.FC = () => {
   ];
 
   return (
-    <div className="absolute inset-0 z-10 flex flex-col justify-between pointer-events-none">
+    <div ref={containerRef} className="w-full h-full flex flex-col justify-between opacity-0 will-change-transform transition-opacity duration-0">
       {/* Top Navigation */}
-      <div className="flex justify-end p-6 space-x-4 pointer-events-auto">
+      <div className="flex justify-end p-6 space-x-4">
         <button className="p-2 text-white/50 hover:text-white transition-colors rounded-full border border-white/10 bg-black/20 backdrop-blur-sm hover:bg-white/10">
           <RotateCcw size={16} />
         </button>
@@ -25,7 +57,7 @@ export const UIOverlay: React.FC = () => {
       <div className="flex-grow flex flex-col items-center justify-center px-4 -mt-10 w-full">
         
         {/* Header Section */}
-        <div className="text-center mb-10 pointer-events-auto z-20">
+        <div className="text-center mb-10 z-20">
            <h1 className="text-5xl md:text-7xl font-light tracking-tight mb-4">
             <span 
               className="bg-clip-text text-transparent"
@@ -42,7 +74,7 @@ export const UIOverlay: React.FC = () => {
         </div>
 
         {/* Glass Card Links Section */}
-        <div className="w-full max-w-md pointer-events-auto perspective-1000">
+        <div className="w-full max-w-md perspective-1000">
           {/* The Glass Container */}
           <div className="relative rounded-[2rem] overflow-hidden transition-all duration-500 hover:shadow-[0_0_50px_-12px_rgba(100,100,255,0.25)] group border border-white/10 bg-gray-900/30 backdrop-blur-xl">
             
@@ -77,7 +109,7 @@ export const UIOverlay: React.FC = () => {
       </div>
 
       {/* Footer */}
-      <div className="flex justify-center pb-8 pointer-events-auto">
+      <div className="flex justify-center pb-8">
          <div className="px-4 py-2 rounded-full bg-black/20 border border-white/5 backdrop-blur-md text-[10px] md:text-xs text-gray-500 tracking-widest uppercase">
           Connect with me
         </div>
