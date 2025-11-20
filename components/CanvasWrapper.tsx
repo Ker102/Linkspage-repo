@@ -29,7 +29,7 @@ export const CanvasWrapper: React.FC = () => {
              {/* HTML Overlay Content */}
              <Scroll html style={{ width: '100%', height: '100%' }}>
                 
-                {/* Page 1: Creator Cafe Intro */}
+                {/* Page 1: Intro */}
                 <section className="w-screen h-screen relative flex flex-col items-center justify-center pointer-events-none">
                     
                     {/* Top Right Buttons (Visual only based on screenshot) */}
@@ -57,10 +57,7 @@ export const CanvasWrapper: React.FC = () => {
                         {/* Big Typography */}
                         <div className="relative leading-[0.85] select-none font-sans">
                             <h1 className="text-[15vw] md:text-[180px] font-black text-[#1a1a1a] tracking-tighter">
-                                CREATOR
-                            </h1>
-                            <h1 className="text-[15vw] md:text-[180px] font-black text-[#1a1a1a] tracking-tighter -mt-[2vw] md:-mt-[40px] relative z-10">
-                                CAFE
+                                KAELUX
                             </h1>
                         </div>
 
